@@ -475,12 +475,20 @@ export function SettingsDialog() {
         }
     };
 
-    const updateConfig = (section: 'openai' | 'gemini', key: string, value: string) => {
+    const updateConfig = (section: 'openai' | 'gemini' | 'qwen', key: string, value: string) => {
         if (section === 'gemini') {
             setConfig(prev => ({
                 ...prev,
                 gemini: {
                     ...prev.gemini,
+                    [key]: value
+                }
+            }));
+        } else if (section === 'qwen') {
+            setConfig(prev => ({
+                ...prev,
+                qwen: {
+                    ...prev.qwen,
                     [key]: value
                 }
             }));
@@ -625,6 +633,19 @@ export function SettingsDialog() {
                     deploymentName: config.azure.deploymentName,
                     apiVersion: config.azure.apiVersion,
                     model: config.azure.model,
+                    language: language
+                };
+            } else if (config.aiProvider === 'qwen') {
+                if (!config.qwen?.apiKey) {
+                    setTestResult({ success: false, textSupport: false, visionSupport: false, textError: t.settings?.ai?.validationApiKeyRequired || 'API Key is required' });
+                    setTesting(false);
+                    return;
+                }
+                requestBody = {
+                    provider: 'qwen',
+                    apiKey: config.qwen.apiKey,
+                    baseUrl: config.qwen.baseUrl,
+                    model: config.qwen.model,
                     language: language
                 };
             } else {
@@ -908,7 +929,7 @@ export function SettingsDialog() {
                                     <Label>{t.settings?.tabs?.ai || "AI Provider"}</Label>
                                     <Select
                                         value={config.aiProvider}
-                                        onValueChange={(val: 'gemini' | 'openai' | 'azure') => setConfig(prev => ({ ...prev, aiProvider: val }))}
+                                        onValueChange={(val: 'gemini' | 'openai' | 'azure' | 'qwen') => setConfig(prev => ({ ...prev, aiProvider: val }))}
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
@@ -917,6 +938,7 @@ export function SettingsDialog() {
                                             <SelectItem value="gemini">Google Gemini</SelectItem>
                                             <SelectItem value="openai">OpenAI / Compatible</SelectItem>
                                             <SelectItem value="azure">Azure OpenAI</SelectItem>
+                                            <SelectItem value="qwen">通义千问 Qwen (阿里云百炼)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -1085,6 +1107,57 @@ export function SettingsDialog() {
                                             currentModel={config.gemini?.model}
                                             onModelChange={(model) => updateConfig('gemini', 'model', model)}
                                         />
+                                    </div>
+                                )}
+
+                                {config.aiProvider === 'qwen' && (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+                                        <div className="space-y-2">
+                                            <Label>API Key</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    type={showApiKey ? "text" : "password"}
+                                                    value={config.qwen?.apiKey || ''}
+                                                    onChange={(e) => updateConfig('qwen', 'apiKey', e.target.value)}
+                                                    placeholder="sk-..."
+                                                    className="pr-10"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                    onClick={() => setShowApiKey(!showApiKey)}
+                                                >
+                                                    {showApiKey ? (
+                                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                                    )}
+                                                </Button>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">
+                                                {t.settings?.ai?.qwenApiKeyHint || "从阿里云百炼控制台获取 API Key (bailian.console.aliyun.com)"}
+                                            </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Base URL (Optional)</Label>
+                                            <Input
+                                                value={config.qwen?.baseUrl || ''}
+                                                onChange={(e) => updateConfig('qwen', 'baseUrl', e.target.value)}
+                                                placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1"
+                                            />
+                                        </div>
+                                        <ModelSelector
+                                            provider="qwen"
+                                            apiKey={config.qwen?.apiKey}
+                                            baseUrl={config.qwen?.baseUrl}
+                                            currentModel={config.qwen?.model}
+                                            onModelChange={(model) => updateConfig('qwen', 'model', model)}
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            {t.settings?.ai?.qwenModelHint || "图片识别需选择视觉模型（如 qwen-vl-max、qwen-vl-plus）"}
+                                        </p>
                                     </div>
                                 )}
 

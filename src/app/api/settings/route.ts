@@ -46,6 +46,11 @@ export async function POST(req: Request) {
             body.azure.apiKey = currentConfig.azure?.apiKey;
         }
 
+        // For Qwen, preserve original key if masked
+        if (body.qwen?.apiKey === '********') {
+            body.qwen.apiKey = currentConfig.qwen?.apiKey;
+        }
+
         const updatedConfig = updateAppConfig(body);
         return NextResponse.json(updatedConfig);
     } catch (error) {

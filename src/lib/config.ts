@@ -16,7 +16,7 @@ export interface OpenAIInstance {
 }
 
 export interface AppConfig {
-    aiProvider: 'gemini' | 'openai' | 'azure';
+    aiProvider: 'gemini' | 'openai' | 'azure' | 'qwen';
     allowRegistration?: boolean;
     openai?: {
         instances?: OpenAIInstance[];
@@ -25,6 +25,11 @@ export interface AppConfig {
     gemini?: {
         apiKey?: string;
         baseUrl?: string;
+        model?: string;
+    };
+    qwen?: {
+        apiKey?: string;
+        baseUrl?: string;   // 默认 DashScope OpenAI 兼容模式地址
         model?: string;
     };
     azure?: {
@@ -88,7 +93,7 @@ function migrateOpenAIConfig(legacy: LegacyOpenAIConfig): AppConfig['openai'] {
 }
 
 const DEFAULT_CONFIG: AppConfig = {
-    aiProvider: (process.env.AI_PROVIDER as 'gemini' | 'openai' | 'azure') || 'gemini',
+    aiProvider: (process.env.AI_PROVIDER as 'gemini' | 'openai' | 'azure' | 'qwen') || 'gemini',
     allowRegistration: true,
     openai: {
         instances: process.env.OPENAI_API_KEY ? [{
@@ -104,6 +109,11 @@ const DEFAULT_CONFIG: AppConfig = {
         apiKey: process.env.GOOGLE_API_KEY,
         baseUrl: process.env.GEMINI_BASE_URL,
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    },
+    qwen: {
+        apiKey: process.env.DASHSCOPE_API_KEY,
+        baseUrl: process.env.QWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        model: process.env.QWEN_MODEL || 'qwen-vl-max',
     },
     azure: {
         apiKey: process.env.AZURE_OPENAI_API_KEY,
@@ -150,6 +160,7 @@ export function getAppConfig(): AppConfig {
                     activeInstanceId: openaiConfig?.activeInstanceId || DEFAULT_CONFIG.openai?.activeInstanceId,
                 },
                 gemini: { ...DEFAULT_CONFIG.gemini, ...userConfig.gemini },
+                qwen: { ...DEFAULT_CONFIG.qwen, ...userConfig.qwen },
                 azure: { ...DEFAULT_CONFIG.azure, ...userConfig.azure },
                 prompts: { ...DEFAULT_CONFIG.prompts, ...userConfig.prompts },
                 timeouts: { ...DEFAULT_CONFIG.timeouts, ...userConfig.timeouts },
@@ -172,6 +183,7 @@ export function updateAppConfig(newConfig: Partial<AppConfig>) {
             activeInstanceId: newConfig.openai?.activeInstanceId ?? currentConfig.openai?.activeInstanceId,
         },
         gemini: { ...currentConfig.gemini, ...newConfig.gemini },
+        qwen: { ...currentConfig.qwen, ...newConfig.qwen },
         azure: { ...currentConfig.azure, ...newConfig.azure },
         prompts: { ...currentConfig.prompts, ...newConfig.prompts },
         timeouts: { ...currentConfig.timeouts, ...newConfig.timeouts },

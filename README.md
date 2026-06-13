@@ -5,7 +5,7 @@
 ## ✨ 主要功能
 
 - **🤖 AI 智能分析**：自动识别题目内容，生成解析、知识点标签和同类练习题。
-- **⚙️ 灵活的 AI 配置**：支持 **Google Gemini** 和 **OpenAI** (及兼容接口) 两种 AI 提供商，可直接在网页设置中动态切换和配置。
+- **⚙️ 灵活的 AI 配置**：支持 **Google Gemini**、**OpenAI** (及兼容接口)、**Azure OpenAI** 和 **通义千问 Qwen (阿里云百炼)** 多种 AI 提供商，可直接在网页设置中动态切换和配置。
 - **📚 多错题本管理**：支持按科目（如数学、物理、英语）创建和管理多个错题本。
 - **🏷️ 智能标签系统**：自动提取知识点标签，支持自定义标签管理。
 - **🔍 多维度筛选**：支持按掌握状态、时间范围、知识点标签、年级学期、试卷等级等多种条件筛选错题。
@@ -40,7 +40,7 @@
 - **UI 库**: [React 19](https://react.dev/)
 - **数据库**: [SQLite](https://www.sqlite.org/) (via [Prisma](https://www.prisma.io/))
 - **样式**: [Tailwind CSS v4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
-- **AI**: Google Gemini API / OpenAI API / Azure OpenAI
+- **AI**: Google Gemini API / OpenAI API / Azure OpenAI / 通义千问 Qwen (阿里云百炼)
 - **认证**: [NextAuth.js](https://next-auth.js.org/)
 
 ## 🚀 快速开始
@@ -126,7 +126,7 @@ cp .env.example .env
 
 | 环境变量 | 描述 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `AI_PROVIDER` | AI 提供商 | `gemini` | 可选 `gemini`、`openai` 或 `azure` |
+| `AI_PROVIDER` | AI 提供商 | `gemini` | 可选 `gemini`、`openai`、`azure` 或 `qwen` |
 
 **Gemini 配置**
 
@@ -143,6 +143,14 @@ cp .env.example .env
 | `OPENAI_API_KEY` | OpenAI API Key | 无 | 使用 OpenAI 时必填，从 [OpenAI Platform](https://platform.openai.com/api-keys) 获取 |
 | `OPENAI_BASE_URL` | OpenAI API 地址 | 无 | 可选，默认 `https://api.openai.com/v1`；使用第三方兼容服务时填写对应地址 |
 | `OPENAI_MODEL` | OpenAI 模型 | `gpt-4o` | 可选，如 `gpt-4-turbo`、`o3`、`o4-mini` 等 |
+
+**通义千问 Qwen (阿里云百炼) 配置**
+
+| 环境变量 | 描述 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `DASHSCOPE_API_KEY` | 百炼 API Key | 无 | 使用 Qwen 时必填，从 [阿里云百炼控制台](https://bailian.console.aliyun.com/) 获取 |
+| `QWEN_BASE_URL` | API 地址 | 无 | 可选，默认 `https://dashscope.aliyuncs.com/compatible-mode/v1`（OpenAI 兼容模式），通常无需修改 |
+| `QWEN_MODEL` | Qwen 模型 | `qwen-vl-max` | 可选，图片识别需视觉模型（如 `qwen-vl-max`、`qwen-vl-plus`）；纯文本可用 `qwen-plus`、`qwen-max` 等 |
 
 **Azure OpenAI 配置**
 

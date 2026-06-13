@@ -17,7 +17,7 @@ import { AIModel, ModelsResponse } from "@/types/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ModelSelectorProps {
-    provider: 'openai' | 'gemini';
+    provider: 'openai' | 'gemini' | 'qwen';
     apiKey?: string;
     baseUrl?: string;
     currentModel?: string;
@@ -122,7 +122,7 @@ export function ModelSelector({ provider, apiKey, baseUrl, currentModel, onModel
                     <Input
                         value={customModel}
                         onChange={(e) => handleCustomModelChange(e.target.value)}
-                        placeholder={provider === 'openai' ? "gpt-4o" : "gemini-1.5-flash"}
+                        placeholder={provider === 'openai' ? "gpt-4o" : provider === 'qwen' ? "qwen-vl-max" : "gemini-1.5-flash"}
                     />
                     {models.length > 0 && (
                         <Button

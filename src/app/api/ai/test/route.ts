@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { OpenAIProvider } from '@/lib/ai/openai-provider';
 import { GeminiProvider } from '@/lib/ai/gemini-provider';
 import { AzureOpenAIProvider } from '@/lib/ai/azure-provider';
+import { QwenProvider, QWEN_DEFAULT_MODEL } from '@/lib/ai/qwen-provider';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('api:ai:test');
@@ -70,7 +71,7 @@ function parseErrorCode(error: unknown): string {
 }
 
 export interface AITestRequest {
-    provider: 'openai' | 'gemini' | 'azure';
+    provider: 'openai' | 'gemini' | 'azure' | 'qwen';
     apiKey: string;
     baseUrl?: string;
     model?: string;
@@ -157,6 +158,14 @@ export async function POST(request: NextRequest) {
                     visionSupport = true;
                     modelInfo = model || deploymentName;
                 }
+            } else if (provider === 'qwen') {
+                const qwen = new QwenProvider({ apiKey, baseUrl, model });
+                const result = await qwen.analyzeImage(TEST_IMAGE_BASE64, TEST_IMAGE_MIME, language);
+                if (result.questionText || result.analysis) {
+                    textSupport = true;
+                    visionSupport = true;
+                    modelInfo = model || QWEN_DEFAULT_MODEL;
+                }
             }
         } catch (error) {
             const errCode = parseErrorCode(error);
@@ -219,6 +228,18 @@ export async function POST(request: NextRequest) {
                     if (result.questionText) {
                         textSupport = true;
                         modelInfo = model || deploymentName;
+                    }
+                } else if (provider === 'qwen') {
+                    const qwen = new QwenProvider({ apiKey, baseUrl, model });
+                    const result = await qwen.generateSimilarQuestion(
+                        '1+1=?',
+                        ['基础算术'],
+                        language,
+                        'easy'
+                    );
+                    if (result.questionText) {
+                        textSupport = true;
+                        modelInfo = model || QWEN_DEFAULT_MODEL;
                     }
                 }
             } catch (error) {

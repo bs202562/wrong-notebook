@@ -126,6 +126,41 @@ describe('AI Provider 初始化', () => {
         });
     });
 
+    describe('Qwen Provider', () => {
+        it('缺少 API Key 时应该抛出 AI_AUTH_ERROR', async () => {
+            const { QwenProvider } = await import('@/lib/ai/qwen-provider');
+
+            expect(() => new QwenProvider({})).toThrow('AI_AUTH_ERROR');
+        });
+
+        it('API Key 为空字符串时应该抛出 AI_AUTH_ERROR', async () => {
+            const { QwenProvider } = await import('@/lib/ai/qwen-provider');
+
+            expect(() => new QwenProvider({ apiKey: '' })).toThrow('AI_AUTH_ERROR');
+        });
+
+        it('有效 API Key 时应该成功创建实例（使用 DashScope 默认配置）', async () => {
+            const { QwenProvider } = await import('@/lib/ai/qwen-provider');
+
+            const provider = new QwenProvider({ apiKey: 'sk-test-dashscope-key' });
+
+            expect(provider).toBeDefined();
+            expect(typeof provider.analyzeImage).toBe('function');
+        });
+
+        it('应该支持自定义 baseUrl 和模型', async () => {
+            const { QwenProvider } = await import('@/lib/ai/qwen-provider');
+
+            const provider = new QwenProvider({
+                apiKey: 'sk-test-key',
+                baseUrl: 'https://custom-dashscope.example.com/v1',
+                model: 'qwen-vl-plus',
+            });
+
+            expect(provider).toBeDefined();
+        });
+    });
+
     describe('AI Service Factory', () => {
         it('应该根据配置返回 OpenAI Provider', async () => {
             const { getAIService } = await import('@/lib/ai');
@@ -163,6 +198,20 @@ describe('AI Provider 初始化', () => {
 
             expect(service).toBeDefined();
             expect(service.constructor.name).toBe('GeminiProvider');
+        });
+
+        it('应该根据配置返回 Qwen Provider', async () => {
+            const { getAIService } = await import('@/lib/ai');
+            vi.mocked(getAppConfig).mockReturnValue({
+                aiProvider: 'qwen',
+                qwen: { apiKey: 'sk-test-dashscope-key', model: 'qwen-vl-max' },
+                gemini: { apiKey: '', model: '' }
+            } as any);
+
+            const service = getAIService();
+
+            expect(service).toBeDefined();
+            expect(service.constructor.name).toBe('QwenProvider');
         });
 
         it('配置未知 provider 时应该默认返回 Gemini Provider', async () => {

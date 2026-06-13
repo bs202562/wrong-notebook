@@ -110,7 +110,7 @@ export interface OpenAIInstance {
 }
 
 export interface AppConfig {
-    aiProvider: 'gemini' | 'openai' | 'azure';
+    aiProvider: 'gemini' | 'openai' | 'azure' | 'qwen';
     allowRegistration?: boolean;
     openai?: {
         instances?: OpenAIInstance[];
@@ -119,6 +119,11 @@ export interface AppConfig {
     gemini?: {
         apiKey?: string;
         baseUrl?: string;
+        model?: string;
+    };
+    qwen?: {
+        apiKey?: string;
+        baseUrl?: string;   // 默认 DashScope OpenAI 兼容模式地址
         model?: string;
     };
     azure?: {

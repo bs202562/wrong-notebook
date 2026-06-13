@@ -84,6 +84,10 @@ export async function GET(req: NextRequest) {
         if (provider === 'gemini') {
             const effectiveBaseUrl = baseUrl || 'https://generativelanguage.googleapis.com';
             models = await fetchGeminiModels(apiKey, effectiveBaseUrl);
+        } else if (provider === 'qwen') {
+            // DashScope 的 OpenAI 兼容模式同样支持 /models 接口
+            const effectiveBaseUrl = baseUrl || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+            models = await fetchOpenAIModels(apiKey, effectiveBaseUrl);
         } else {
             // OpenAI-compatible
             const effectiveBaseUrl = baseUrl || 'https://api.openai.com/v1';

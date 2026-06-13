@@ -405,6 +405,9 @@ export const translations = {
                 azureModel: "Model Display Name",
                 validationAzureEndpointRequired: "Azure Endpoint is required",
                 validationAzureDeploymentRequired: "Deployment Name is required",
+                // Qwen (DashScope)
+                qwenApiKeyHint: "Get your API Key from Alibaba Cloud Model Studio (bailian.console.aliyun.com)",
+                qwenModelHint: "Image analysis requires a vision model (e.g. qwen-vl-max, qwen-vl-plus)",
                 // 连接测试
                 testConnection: "Test Connection",
                 testing: "Testing...",
@@ -1053,6 +1056,9 @@ export const translations = {
                 azureModel: "模型显示名",
                 validationAzureEndpointRequired: "Azure 端点不能为空",
                 validationAzureDeploymentRequired: "部署名称不能为空",
+                // 通义千问 (百炼)
+                qwenApiKeyHint: "从阿里云百炼控制台获取 API Key (bailian.console.aliyun.com)",
+                qwenModelHint: "图片识别需选择视觉模型（如 qwen-vl-max、qwen-vl-plus）",
                 // 连接测试
                 testConnection: "测试连接",
                 testing: "测试中...",
